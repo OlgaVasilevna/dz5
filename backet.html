@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css" >
+</head>
+<body>
+    <h1 class="title_backet">Корзина</h1>
+    <div class="products_cart">
+
+    </div>
+    <script>
+        
+        let cart= JSON.parse(sessionStorage.getItem("cart"))
+        cart.render = function () {
+        let str = ''
+        cart.items.forEach (item => {
+            str += `
+                <div class="product_cart">
+                    <img class="img_cart" src="https://placehold.it/100x100">
+                    <p class="text_cart">${item.product_name}</p>
+                    <p class="text_cart">${item.price}$</p>
+                    <p class="text_cart">кол-во ${item.quantity} шт.</p>
+                    <button  class="button_cart"onclick="cart.addProduct(${item.product_id})">+</button>
+                    <button class="button_cart" onclick="cart.deleteProduct(${item.product_id})">-</button>
+                </div>
+            `
+        })
+        str+=`<div>
+                <div><p>Кол-во ${cart.total} шт.</p></div>
+                <div><p> Цена ${cart.sum}$</p></div>
+              </div>`
+        document.querySelector(".products_cart").innerHTML = str
+    }
+    cart.addProduct = function(product){
+        cart.items.forEach((el,index)=>{
+            if (el.product_id==product){
+                cart.items[index].quantity++
+                this._checkTotal()
+                this.calculateSum()
+                this.render()
+            }
+        })  
+    }
+    cart.deleteProduct = function(product){
+        cart.items.forEach((el,index)=>{
+            if (el.product_id==product){
+                if (el.quantity>1){
+                    cart.items[index].quantity--
+                } else {
+                    delete cart.items[index]
+                }
+                this._checkTotal()
+                this.calculateSum()
+                this.render()
+            }
+        })  
+    }
+    cart._checkTotal = function() {
+        cart.total=0
+        cart.items.forEach(el => {
+            if (el!=undefined){
+                cart.total+=el.quantity
+            }
+        }) 
+    }
+    cart.calculateSum = function() {
+        cart.sum=0
+        cart.items.forEach(el => {
+            if (el!=undefined){
+                this.sum+=el.price*el.quantity
+            }
+        }) 
+    }
+    cart.render()
+    </script>
+</body>
+</html>
